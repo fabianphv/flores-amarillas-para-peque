@@ -138,6 +138,68 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 .choice-button.correct { background: rgba(249,199,79,.16); border-color: rgba(249,199,79,.55); }
 .choice-hint { min-height: 24px; color: var(--gold-light); margin: 18px 0 0; }
 
+.mini-game { padding-block: 32px; }
+.game-card {
+  width: min(780px, 100%);
+  padding: clamp(26px, 5vw, 48px);
+  border-radius: 30px;
+  text-align: center;
+}
+.game-card h2 { color: var(--gold-light); }
+.game-intro { color: var(--muted); margin: 16px auto 22px; line-height: 1.6; }
+.game-stats {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 14px;
+  color: var(--gold-light);
+  font-size: 1.05rem;
+}
+.game-stats strong { color: white; font-size: 1.25rem; }
+.game-area {
+  position: relative;
+  height: min(52vh, 430px);
+  min-height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(4,18,38,.58), rgba(249,199,79,.12));
+  box-shadow: inset 0 0 60px rgba(0,0,0,.28);
+}
+.game-ready {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px;
+}
+.game-ready > span { font-size: 4.5rem; animation: bouquet 2.5s ease-in-out infinite; }
+.game-ready p { margin: 0 0 6px; font-family: "Playfair Display", serif; font-size: 1.5rem; }
+.catch-flower {
+  position: absolute;
+  z-index: 2;
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: rgba(255,240,170,.16);
+  box-shadow: 0 0 26px rgba(249,199,79,.72);
+  font-size: 2.4rem;
+  animation: pop-flower .28s ease-out both, game-pulse .8s ease-in-out infinite alternate;
+  touch-action: manipulation;
+}
+.catch-flower:hover { transform: scale(1.12); }
+.catch-flower.caught { animation: caught .25s ease-out forwards; pointer-events: none; }
+.game-message { min-height: 25px; margin: 16px 0; color: var(--gold-light); }
+#open-letter { margin-inline: auto; }
+@keyframes pop-flower { from { opacity: 0; transform: scale(.25) rotate(-20deg); } }
+@keyframes game-pulse { to { box-shadow: 0 0 38px rgba(255,224,120,.95); } }
+@keyframes caught { to { opacity: 0; transform: scale(1.7) rotate(25deg); } }
+
 .letter-scene { padding-block: 60px; }
 .letter-wrap { width: min(820px, 100%); }
 .letter { position: relative; overflow: hidden; padding: clamp(30px, 7vw, 72px); border-radius: 4px 32px 4px 32px; }
@@ -178,6 +240,8 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
   .flower-4 { left: 5%; bottom: 7%; }
   .flower-5 { right: 34%; bottom: 2%; }
   .choice-grid { grid-template-columns: 1fr; }
+  .game-area { min-height: 390px; }
+  .catch-flower { width: 68px; height: 68px; }
   .choice-button span { display: inline; margin: 0 8px 0 0; }
   .letter-actions { display: grid; }
 }
