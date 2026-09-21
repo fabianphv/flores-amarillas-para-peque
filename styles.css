@@ -191,7 +191,7 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
   box-shadow: 0 0 30px rgba(249,199,79,.58);
   font-size: 3.5rem;
   transform: translate(-50%, -50%);
-  transition: left var(--shuffle-speed, .65s) cubic-bezier(.3,.8,.3,1), top .25s ease, transform .18s ease, box-shadow .2s ease;
+  transition: left var(--shuffle-speed, .82s) cubic-bezier(.45,0,.25,1), top .32s ease, transform .18s ease, box-shadow .2s ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -206,6 +206,20 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 .bird-slot-0 { left: 18%; }
 .bird-slot-1 { left: 50%; }
 .bird-slot-2 { left: 82%; }
+.bird-mark {
+  position: absolute;
+  left: -7px;
+  top: -8px;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background: rgba(7,22,45,.92);
+  border: 1px solid rgba(255,231,146,.55);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  font-size: .95rem;
+}
 .hidden-letter {
   position: absolute;
   right: -8px;
