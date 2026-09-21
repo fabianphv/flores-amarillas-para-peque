@@ -121,7 +121,34 @@
         </div>
 
         <button class="primary-button" id="next-case" hidden>Siguiente caso <span aria-hidden="true">→</span></button>
-        <button class="primary-button" id="open-letter" hidden>Recuperar la carta <span aria-hidden="true">💌</span></button>
+        <button class="primary-button" id="go-petal-game" hidden>Reconstruir el ramo <span aria-hidden="true">🌻</span></button>
+      </div>
+    </section>
+
+    <section class="scene petal-game" id="petal-game" aria-labelledby="petal-title" hidden>
+      <div class="petal-game-card glass">
+        <p class="eyebrow">Emergencia en el jardín</p>
+        <h2 id="petal-title">¡Atrapa los pétalos!</h2>
+        <p class="petal-intro">Los pajaritos aletearon demasiado fuerte y desarmaron el ramo. Recupera 15 pétalos amarillos para reconstruirlo.</p>
+
+        <div class="petal-stats" aria-live="polite">
+          <span>Pétalos: <strong id="petal-score">0</strong>/15</span>
+          <span>Racha: <strong id="petal-streak">0</strong></span>
+        </div>
+
+        <div class="petal-game-area" id="petal-game-area" aria-label="Zona para atrapar pétalos">
+          <div class="petal-ready" id="petal-ready">
+            <span aria-hidden="true">🌻 🐤 🌻</span>
+            <p>“Fue culpa del viento. Nosotros solo aleteamos.”</p>
+            <button class="primary-button" id="start-petal-game">Empezar a recoger</button>
+          </div>
+        </div>
+
+        <p class="petal-message" id="petal-message" aria-live="polite">Toca los pétalos y las flores; cuidado con las distracciones.</p>
+        <div class="bouquet-progress" aria-hidden="true">
+          <span id="bouquet-fill"></span>
+        </div>
+        <button class="primary-button" id="open-letter" hidden>Abrir la carta <span aria-hidden="true">💌</span></button>
       </div>
     </section>
 
