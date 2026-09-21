@@ -68,6 +68,30 @@
       </div>
     </section>
 
+    <section class="scene mini-game" id="mini-game" aria-labelledby="game-title" hidden>
+      <div class="game-card glass">
+        <p class="eyebrow">Desafío para mi princesita</p>
+        <h2 id="game-title">Atrapa 10 flores amarillas</h2>
+        <p class="game-intro">Tienes 20 segundos. Cada flor que atrapes acercará un poquito más la carta.</p>
+
+        <div class="game-stats" aria-live="polite">
+          <span>Flores: <strong id="game-score">0</strong>/10</span>
+          <span>Tiempo: <strong id="game-time">20</strong>s</span>
+        </div>
+
+        <div class="game-area" id="game-area" aria-label="Zona del juego">
+          <div class="game-ready" id="game-ready">
+            <span aria-hidden="true">🌻</span>
+            <p>¿Preparada, mañosita?</p>
+            <button class="primary-button" id="start-game">Comenzar juego</button>
+          </div>
+        </div>
+
+        <p class="game-message" id="game-message" aria-live="polite">Toca las flores antes de que desaparezcan.</p>
+        <button class="primary-button" id="open-letter" hidden>Abrir mi carta <span aria-hidden="true">💌</span></button>
+      </div>
+    </section>
+
     <section class="scene letter-scene" id="letter-scene" aria-labelledby="letter-title" hidden>
       <div class="letter-wrap">
         <div class="letter glass">
