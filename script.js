@@ -199,19 +199,26 @@ function resetTrial() {
 }
 
 let petalScore = 0;
+let petalLives = 3;
 let petalStreak = 0;
-let petalTimer = null;
+let petalBestStreak = 0;
 let petalRunning = false;
-let petalSlowUntil = 0;
+let petalSpawnTimer = null;
+let petalClockTimer = null;
+let petalDeadline = 0;
+let petalGraceUntil = 0;
 
+const PETAL_TARGET = 35;
+const PETAL_DURATION = 45;
 const petalItems = [
-  { symbol: "🌼", type: "petal", points: 1, weight: 42 },
-  { symbol: "🌻", type: "flower", points: 3, weight: 15 },
-  { symbol: "💛", type: "heart", points: 0, weight: 8 },
-  { symbol: "🐤", type: "bird", points: -1, weight: 9 },
-  { symbol: "💧", type: "rain", points: -2, weight: 9 },
+  { symbol: "🌼", type: "petal", points: 1, weight: 40, good: true },
+  { symbol: "🌻", type: "flower", points: 4, weight: 10, good: true },
+  { symbol: "💛", type: "heart", points: 0, weight: 5 },
+  { symbol: "⏳", type: "clock", points: 0, weight: 5 },
+  { symbol: "🐤", type: "bird", points: -3, weight: 12 },
+  { symbol: "💧", type: "rain", points: 0, weight: 10 },
   { symbol: "🍂", type: "leaf", points: 0, weight: 10 },
-  { symbol: "🌾", type: "seed", points: 0, weight: 7 }
+  { symbol: "🥀", type: "fake", points: 0, weight: 8 }
 ];
 
 document.getElementById("go-petal-game").addEventListener("click", () => {
@@ -219,37 +226,60 @@ document.getElementById("go-petal-game").addEventListener("click", () => {
   showScene("petal-game");
 });
 
-document.getElementById("start-petal-game").addEventListener("click", () => {
-  resetPetalGame();
-  document.getElementById("petal-ready").hidden = true;
+document.getElementById("start-petal-game").addEventListener("click", startPetalGame);
+document.getElementById("retry-petal-game").addEventListener("click", startPetalGame);
+
+function startPetalGame() {
+  clearPetalTimers();
+  document.querySelectorAll(".falling-item").forEach((item) => item.remove());
+  petalScore = 0;
+  petalLives = 3;
+  petalStreak = 0;
+  petalBestStreak = 0;
   petalRunning = true;
-  document.getElementById("petal-message").textContent = "¡Atrapa los pétalos amarillos antes de que se los lleve el viento!";
+  petalDeadline = Date.now() + PETAL_DURATION * 1000;
+  petalGraceUntil = Date.now() + 1800;
+  document.getElementById("petal-ready").hidden = true;
+  document.getElementById("petal-result").hidden = true;
+  document.getElementById("open-letter").hidden = true;
+  document.getElementById("petal-message").textContent =
+    "¡Comenzó! Atrapa los pétalos amarillos y no dejes que se escapen.";
+  updatePetalHud();
+  petalClockTimer = setInterval(updatePetalClock, 200);
   schedulePetal();
-});
+}
 
 function schedulePetal() {
   if (!petalRunning) return;
   spawnPetalItem();
-  const slowed = Date.now() < petalSlowUntil;
-  const baseDelay = Math.max(430, 820 - petalScore * 13);
-  petalTimer = setTimeout(schedulePetal, slowed ? baseDelay * 1.55 : baseDelay);
+  const elapsed = PETAL_DURATION - getPetalSecondsLeft();
+  const delay = elapsed < 15 ? 760 : elapsed < 30 ? 610 : 480;
+  petalSpawnTimer = setTimeout(schedulePetal, delay);
 }
 
 function spawnPetalItem() {
   const area = document.getElementById("petal-game-area");
   const itemData = choosePetalItem();
   const item = document.createElement("button");
-  item.className = `falling-item ${itemData.points > 0 ? "good" : "trick"}`;
+  const elapsed = PETAL_DURATION - getPetalSecondsLeft();
+  const fallBase = elapsed < 15 ? 5.8 : elapsed < 30 ? 4.8 : 4.05;
+
+  item.className = `falling-item ${itemData.good ? "good" : "trick"}`;
   item.type = "button";
   item.textContent = itemData.symbol;
   item.setAttribute("aria-label", describePetalItem(itemData.type));
-  item.style.left = `${4 + Math.random() * 86}%`;
-  item.style.setProperty("--sway", `${(Math.random() - .5) * 90}px`);
-  const slowed = Date.now() < petalSlowUntil;
-  item.style.setProperty("--fall-time", `${(slowed ? 7.4 : 5.4) + Math.random() * 1.4}s`);
+  item.style.left = `${4 + Math.random() * 84}%`;
+  item.style.setProperty("--sway", `${(Math.random() - .5) * 105}px`);
+  item.style.setProperty("--fall-time", `${fallBase + Math.random() * .8}s`);
+  item.dataset.caught = "false";
 
   item.addEventListener("click", () => catchPetalItem(item, itemData));
-  item.addEventListener("animationend", () => item.remove(), { once: true });
+  item.addEventListener("animationend", () => {
+    if (item.dataset.caught === "false" && itemData.good && petalRunning) {
+      missPetal();
+    }
+    item.remove();
+  }, { once: true });
   area.appendChild(item);
 }
 
@@ -264,80 +294,179 @@ function choosePetalItem() {
 }
 
 function catchPetalItem(element, itemData) {
-  if (!petalRunning || element.classList.contains("caught")) return;
+  if (!petalRunning || element.dataset.caught === "true") return;
+  element.dataset.caught = "true";
   element.classList.add("caught");
 
-  if (itemData.type === "petal") {
-    petalScore += 1;
+  if (itemData.type === "petal" || itemData.type === "flower") {
     petalStreak += 1;
-    document.getElementById("petal-message").textContent = "¡Pétalo recuperado! El ramo empieza a volver a la vida.";
-  } else if (itemData.type === "flower") {
-    petalScore += 3;
-    petalStreak += 1;
-    document.getElementById("petal-message").textContent = "¡Flor completa! Vale tres pétalos. Excelente captura.";
+    petalBestStreak = Math.max(petalBestStreak, petalStreak);
+    const multiplier = getPetalMultiplier();
+    petalScore += itemData.points * multiplier;
+    flashPetalArea("bonus");
+    document.getElementById("petal-message").textContent =
+      itemData.type === "flower"
+        ? `¡Girasol dorado! +${itemData.points * multiplier} puntos.`
+        : `¡Pétalo atrapado! Combo x${multiplier}.`;
   } else if (itemData.type === "heart") {
-    petalSlowUntil = Date.now() + 5000;
-    document.getElementById("petal-message").textContent = "Corazón dorado: el viento se calmó durante cinco segundos.";
+    petalLives = Math.min(3, petalLives + 1);
+    document.getElementById("petal-message").textContent =
+      petalLives === 3 ? "Ya tenías todas las vidas. El corazón igual te apoya." : "¡Recuperaste una vida!";
+    flashPetalArea("bonus");
+  } else if (itemData.type === "clock") {
+    petalDeadline += 5000;
+    document.getElementById("petal-message").textContent = "¡Tiempo extra! Ganaste cinco segundos.";
+    flashPetalArea("bonus");
   } else if (itemData.type === "bird") {
-    petalScore = Math.max(0, petalScore - 1);
-    petalStreak = 0;
-    document.getElementById("petal-message").textContent = "El pajarito cobró un pétalo como impuesto. Qué conveniente.";
-  } else if (itemData.type === "rain") {
-    petalScore = Math.max(0, petalScore - 2);
-    petalStreak = 0;
-    document.getElementById("petal-message").textContent = "¡Le diste agua a la pantalla! Se perdieron dos pétalos.";
+    petalScore = Math.max(0, petalScore - 3);
+    breakPetalStreak();
+    document.getElementById("petal-message").textContent =
+      "El pajarito cobró tres puntos como impuesto. Qué conveniente.";
+    flashPetalArea("hit");
   } else if (itemData.type === "leaf") {
-    petalStreak = 0;
-    document.getElementById("petal-message").textContent = "Eso era una hoja. El ramo no acepta devoluciones.";
+    breakPetalStreak();
+    document.getElementById("petal-message").textContent =
+      "Era una hoja. Tu multiplicador se fue volando.";
+    flashPetalArea("hit");
+  } else if (itemData.type === "rain") {
+    losePetalLife("¡Gota de lluvia! Perdiste una vida.");
   } else {
-    petalStreak = 0;
-    document.getElementById("petal-message").textContent = "Esa semilla despertó el apetito de todo el tribunal.";
+    losePetalLife("¡Flor falsa! Los pajaritos la pintaron para hacer trampa.");
   }
 
-  petalScore = Math.min(15, petalScore);
-  document.getElementById("petal-score").textContent = String(petalScore);
-  document.getElementById("petal-streak").textContent = String(petalStreak);
-  document.getElementById("bouquet-fill").style.width = `${(petalScore / 15) * 100}%`;
-
-  if (petalScore >= 15) finishPetalGame();
+  petalScore = Math.min(PETAL_TARGET, petalScore);
+  updatePetalHud();
+  if (petalScore >= PETAL_TARGET) winPetalGame();
   setTimeout(() => element.remove(), 260);
 }
 
-function finishPetalGame() {
+function missPetal() {
+  if (Date.now() < petalGraceUntil) return;
+  losePetalLife("Se escapó un pétalo amarillo. ¡No pierdas de vista los siguientes!");
+}
+
+function losePetalLife(message) {
+  if (!petalRunning || Date.now() < petalGraceUntil) return;
+  petalLives -= 1;
+  petalGraceUntil = Date.now() + 900;
+  breakPetalStreak();
+  document.getElementById("petal-message").textContent = message;
+  flashPetalArea("hit");
+  updatePetalHud();
+  if (petalLives <= 0) endPetalGame("lives");
+}
+
+function breakPetalStreak() {
+  petalStreak = 0;
+}
+
+function getPetalMultiplier() {
+  if (petalStreak >= 10) return 4;
+  if (petalStreak >= 6) return 3;
+  if (petalStreak >= 3) return 2;
+  return 1;
+}
+
+function getPetalSecondsLeft() {
+  return Math.max(0, Math.ceil((petalDeadline - Date.now()) / 1000));
+}
+
+function updatePetalClock() {
+  if (!petalRunning) return;
+  updatePetalHud();
+  if (getPetalSecondsLeft() <= 0) endPetalGame("time");
+}
+
+function updatePetalHud() {
+  document.getElementById("petal-score").textContent = String(petalScore);
+  document.getElementById("petal-time").textContent = String(getPetalSecondsLeft());
+  document.getElementById("petal-lives").textContent =
+    "💛".repeat(Math.max(0, petalLives)) + "🖤".repeat(Math.max(0, 3 - petalLives));
+  document.getElementById("petal-multiplier").textContent = `x${getPetalMultiplier()}`;
+  document.getElementById("bouquet-fill").style.width =
+    `${Math.min(100, (petalScore / PETAL_TARGET) * 100)}%`;
+}
+
+function winPetalGame() {
   petalRunning = false;
-  clearTimeout(petalTimer);
+  clearPetalTimers();
   document.querySelectorAll(".falling-item").forEach((item) => item.remove());
+  savePetalBestScore(petalScore);
   document.getElementById("petal-message").textContent =
-    "Ramo reconstruido. Daños causados por pajaritos: muchos. Arrepentimiento: ninguno.";
+    "¡Ramo reconstruido! Dificultad superada y pajaritos oficialmente derrotados.";
   document.getElementById("open-letter").hidden = false;
-  launchPetals(32);
+  launchPetals(38);
+}
+
+function endPetalGame(reason) {
+  petalRunning = false;
+  clearPetalTimers();
+  document.querySelectorAll(".falling-item").forEach((item) => item.remove());
+  const best = savePetalBestScore(petalScore);
+  document.getElementById("result-icon").textContent = reason === "time" ? "⏰" : "🐤";
+  document.getElementById("result-title").textContent = "Game Over";
+  document.getElementById("result-message").textContent =
+    reason === "time"
+      ? "Se acabó el tiempo. El viento se llevó el ramo, pero puedes intentarlo nuevamente."
+      : "Los pajaritos solicitan que practiques tus reflejos antes de volver al jardín.";
+  document.getElementById("result-score").textContent = String(petalScore);
+  document.getElementById("result-streak").textContent = String(petalBestStreak);
+  document.getElementById("best-score").textContent = String(best);
+  document.getElementById("petal-result").hidden = false;
+}
+
+function savePetalBestScore(score) {
+  let best = score;
+  try {
+    const saved = Number(localStorage.getItem("mejorPuntajePetalos") || 0);
+    best = Math.max(saved, score);
+    localStorage.setItem("mejorPuntajePetalos", String(best));
+  } catch {
+    best = score;
+  }
+  return best;
+}
+
+function flashPetalArea(className) {
+  const area = document.getElementById("petal-game-area");
+  area.classList.remove("hit", "bonus");
+  void area.offsetWidth;
+  area.classList.add(className);
+  setTimeout(() => area.classList.remove(className), 380);
+}
+
+function clearPetalTimers() {
+  clearTimeout(petalSpawnTimer);
+  clearInterval(petalClockTimer);
 }
 
 function resetPetalGame() {
   petalRunning = false;
-  clearTimeout(petalTimer);
+  clearPetalTimers();
   petalScore = 0;
+  petalLives = 3;
   petalStreak = 0;
-  petalSlowUntil = 0;
+  petalBestStreak = 0;
+  petalDeadline = Date.now() + PETAL_DURATION * 1000;
   document.querySelectorAll(".falling-item").forEach((item) => item.remove());
-  document.getElementById("petal-score").textContent = "0";
-  document.getElementById("petal-streak").textContent = "0";
-  document.getElementById("bouquet-fill").style.width = "0%";
   document.getElementById("petal-ready").hidden = false;
+  document.getElementById("petal-result").hidden = true;
   document.getElementById("open-letter").hidden = true;
   document.getElementById("petal-message").textContent =
-    "Toca los pétalos y las flores; cuidado con las distracciones.";
+    "Los pétalos suman; las gotas y flores falsas quitan vidas.";
+  updatePetalHud();
 }
 
 function describePetalItem(type) {
   const labels = {
     petal: "Atrapar pétalo amarillo",
-    flower: "Atrapar flor amarilla completa",
-    heart: "Atrapar corazón dorado",
+    flower: "Atrapar girasol dorado",
+    heart: "Recuperar una vida",
+    clock: "Conseguir tiempo extra",
     bird: "Evitar pajarito amarillo",
     rain: "Evitar gota de lluvia",
     leaf: "Evitar hoja seca",
-    seed: "Evitar semilla"
+    fake: "Evitar flor falsa"
   };
   return labels[type];
 }
