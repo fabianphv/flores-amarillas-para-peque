@@ -68,36 +68,60 @@
       </div>
     </section>
 
-    <section class="scene bird-game" id="bird-game" aria-labelledby="bird-game-title" hidden>
-      <div class="bird-game-card glass">
-        <p class="eyebrow">Desafío de atención emplumado</p>
-        <h2 id="bird-game-title">¿Qué pajarito robó la carta?</h2>
-        <p class="bird-game-intro">Mira bien cuál lleva el sobre y recuerda su distintivo. Los tres se mezclarán, pero siempre podrás seguirlos con la vista.</p>
+    <section class="scene bird-trial" id="bird-trial" aria-labelledby="trial-title" hidden>
+      <div class="trial-card glass">
+        <p class="eyebrow">Tribunal Supremo de los Pajaritos</p>
+        <h2 id="trial-title">¿Quién se robó la carta?</h2>
+        <p class="trial-intro">Interroga a los sospechosos, revisa las pistas y descubre quién está mintiendo. Hay tres casos por resolver.</p>
 
-        <div class="bird-game-stats" aria-live="polite">
-          <span>Ronda: <strong id="bird-round">1</strong>/5</span>
-          <span>Aciertos: <strong id="bird-score">0</strong></span>
+        <div class="trial-status" aria-live="polite">
+          <span>Caso: <strong id="case-number">1</strong>/3</span>
+          <span>Resueltos: <strong id="cases-solved">0</strong></span>
         </div>
 
-        <div class="bird-game-area" id="bird-game-area" aria-label="Juego de concentración con tres pajaritos">
-          <div class="bird-ready" id="bird-ready">
-            <span class="bird-duo" aria-hidden="true">🐤 🐤 🐤</span>
-            <p>“Jamás descubrirás quién tiene la carta.”</p>
-            <button class="primary-button" id="start-bird-game">Aceptar el desafío</button>
+        <div class="suspects" id="suspects">
+          <article class="suspect-card">
+            <div class="suspect-bird" aria-hidden="true">🐤<span>🎀</span></div>
+            <h3>Lazo</h3>
+            <button class="secondary-button interrogate" data-bird="0">Interrogar</button>
+          </article>
+          <article class="suspect-card">
+            <div class="suspect-bird" aria-hidden="true">🐤<span>🍀</span></div>
+            <h3>Trébol</h3>
+            <button class="secondary-button interrogate" data-bird="1">Interrogar</button>
+          </article>
+          <article class="suspect-card">
+            <div class="suspect-bird" aria-hidden="true">🐤<span>⭐</span></div>
+            <h3>Estrella</h3>
+            <button class="secondary-button interrogate" data-bird="2">Interrogar</button>
+          </article>
+        </div>
+
+        <div class="testimony-box" id="testimony-box" aria-live="polite">
+          <span class="testimony-icon" aria-hidden="true">⚖️</span>
+          <p id="testimony-text">El juez espera que interrogues a los tres sospechosos.</p>
+        </div>
+
+        <div class="evidence-area">
+          <p class="evidence-title">Revisar evidencia</p>
+          <div class="evidence-buttons">
+            <button class="evidence-button" data-clue="0">🔎 Escena</button>
+            <button class="evidence-button" data-clue="1">🌻 Semillas</button>
+            <button class="evidence-button" data-clue="2">🪶 Pluma</button>
           </div>
+        </div>
 
-          <div class="bird-stage" id="bird-stage" hidden>
-            <button class="memory-bird bird-slot-0" data-bird="0" aria-label="Elegir primer pajarito">🐤<span class="bird-mark" aria-hidden="true">🎀</span><span class="hidden-letter">💌</span></button>
-            <button class="memory-bird bird-slot-1" data-bird="1" aria-label="Elegir segundo pajarito">🐤<span class="bird-mark" aria-hidden="true">🍀</span><span class="hidden-letter">💌</span></button>
-            <button class="memory-bird bird-slot-2" data-bird="2" aria-label="Elegir tercer pajarito">🐤<span class="bird-mark" aria-hidden="true">⭐</span><span class="hidden-letter">💌</span></button>
+        <div class="accusation-area">
+          <p id="accusation-instruction">Interroga a todos y revisa al menos dos pistas.</p>
+          <div class="accusation-buttons">
+            <button class="choice-button accuse" data-bird="0" disabled>Acusar a Lazo</button>
+            <button class="choice-button accuse" data-bird="1" disabled>Acusar a Trébol</button>
+            <button class="choice-button accuse" data-bird="2" disabled>Acusar a Estrella</button>
           </div>
         </div>
 
-        <p class="bird-message" id="bird-message" aria-live="polite">Los sospechosos están intentando parecer inocentes.</p>
-        <div class="letter-pieces" id="letter-pieces" aria-label="Fragmentos recuperados">
-          <span>□</span><span>□</span><span>□</span><span>□</span><span>□</span>
-        </div>
-        <button class="primary-button" id="open-letter" hidden>Recuperé la carta <span aria-hidden="true">💌</span></button>
+        <button class="primary-button" id="next-case" hidden>Siguiente caso <span aria-hidden="true">→</span></button>
+        <button class="primary-button" id="open-letter" hidden>Recuperar la carta <span aria-hidden="true">💌</span></button>
       </div>
     </section>
 
