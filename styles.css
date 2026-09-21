@@ -281,19 +281,22 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 .result-stats strong { color: white; }
 .petal-game-area.hit { animation: area-hit .32s ease; }
 .petal-game-area.bonus { animation: area-bonus .35s ease; }
+.petal-game-area.storm {
+  box-shadow: inset 0 0 70px rgba(79,143,255,.22), 0 0 24px rgba(249,199,79,.16);
+}
 .falling-item {
   position: absolute;
   z-index: 2;
-  top: -76px;
+  top: -64px;
   display: grid;
   place-items: center;
-  width: 62px;
-  height: 62px;
+  width: 54px;
+  height: 54px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: rgba(255,255,255,.09);
-  font-size: 2.35rem;
+  font-size: 2rem;
   cursor: pointer;
   animation: petal-fall var(--fall-time, 5.8s) linear forwards;
   user-select: none;
@@ -375,7 +378,7 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
   .suspect-bird { font-size: 3.3rem; }
   .petal-stats { grid-template-columns: repeat(2, auto); }
   .petal-game-area { min-height: 410px; }
-  .falling-item { width: 68px; height: 68px; font-size: 2.5rem; }
+  .falling-item { width: 56px; height: 56px; font-size: 2.1rem; }
   .letter-actions { display: grid; }
 }
 
