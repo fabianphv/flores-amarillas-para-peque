@@ -77,21 +77,21 @@ async function startBirdRound() {
   carrierBird = Math.floor(Math.random() * memoryBirds.length);
   birdPositions = [18, 50, 82];
   document.getElementById("bird-round").textContent = String(birdRound);
-  document.getElementById("bird-message").textContent = "Memoriza bien quién lleva el sobre…";
+  document.getElementById("bird-message").textContent = "Mira el pajarito y recuerda también su pequeño distintivo…";
   memoryBirds.forEach((bird, index) => {
     bird.disabled = true;
     bird.className = `memory-bird bird-slot-${index}`;
     bird.style.left = `${birdPositions[index]}%`;
-    bird.style.setProperty("--shuffle-speed", `${Math.max(.28, .62 - birdRound * .06)}s`);
+    bird.style.setProperty("--shuffle-speed", `${Math.max(.56, .86 - birdRound * .05)}s`);
   });
 
   memoryBirds[carrierBird].classList.add("revealing");
-  await pause(Math.max(850, 1450 - birdRound * 90));
+  await pause(Math.max(1350, 1950 - birdRound * 80));
   if (token !== gameToken) return;
   memoryBirds[carrierBird].classList.remove("revealing");
   document.getElementById("bird-message").textContent = "¡No le quites los ojos de encima!";
 
-  const swaps = 3 + birdRound * 2;
+  const swaps = 2 + birdRound;
   for (let i = 0; i < swaps; i += 1) {
     let first = Math.floor(Math.random() * 3);
     let second = Math.floor(Math.random() * 3);
@@ -100,7 +100,7 @@ async function startBirdRound() {
     memoryBirds.forEach((bird, index) => {
       bird.style.left = `${birdPositions[index]}%`;
     });
-    await pause(Math.max(310, 720 - birdRound * 70));
+    await pause(Math.max(610, 970 - birdRound * 55));
     if (token !== gameToken) return;
   }
 
