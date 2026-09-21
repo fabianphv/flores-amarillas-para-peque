@@ -212,7 +212,7 @@ const PETAL_TARGET = 35;
 const PETAL_DURATION = 45;
 const petalItems = [
   { symbol: "🌼", type: "petal", points: 1, weight: 40, good: true },
-  { symbol: "🌻", type: "flower", points: 4, weight: 10, good: true },
+  { symbol: "🌻", type: "flower", points: 2, weight: 10, good: true },
   { symbol: "💛", type: "heart", points: 0, weight: 5 },
   { symbol: "⏳", type: "clock", points: 0, weight: 5 },
   { symbol: "🐤", type: "bird", points: -3, weight: 12 },
@@ -302,11 +302,14 @@ function catchPetalItem(element, itemData) {
     petalStreak += 1;
     petalBestStreak = Math.max(petalBestStreak, petalStreak);
     const multiplier = getPetalMultiplier();
-    petalScore += itemData.points * multiplier;
+    const earnedPoints = itemData.type === "flower"
+      ? itemData.points
+      : itemData.points * multiplier;
+    petalScore += earnedPoints;
     flashPetalArea("bonus");
     document.getElementById("petal-message").textContent =
       itemData.type === "flower"
-        ? `¡Girasol dorado! +${itemData.points * multiplier} puntos.`
+        ? `¡Girasol dorado! +${earnedPoints} puntos. Los premios no usan multiplicador.`
         : `¡Pétalo atrapado! Combo x${multiplier}.`;
   } else if (itemData.type === "heart") {
     petalLives = Math.min(3, petalLives + 1);
