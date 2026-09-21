@@ -207,11 +207,12 @@ let petalSpawnTimer = null;
 let petalClockTimer = null;
 let petalDeadline = 0;
 let petalGraceUntil = 0;
+let petalStormAnnounced = false;
 
 const PETAL_TARGET = 35;
-const PETAL_DURATION = 45;
+const PETAL_DURATION = 40;
 const petalItems = [
-  { symbol: "🌼", type: "petal", points: 1, weight: 40, good: true },
+  { symbol: "🌼", type: "petal", points: 1, weight: 55, good: true },
   { symbol: "💛", type: "heart", points: 0, weight: 5 },
   { symbol: "⏳", type: "clock", points: 0, weight: 5 },
   { symbol: "🐤", type: "bird", points: -3, weight: 12 },
@@ -238,6 +239,7 @@ function startPetalGame() {
   petalRunning = true;
   petalDeadline = Date.now() + PETAL_DURATION * 1000;
   petalGraceUntil = Date.now() + 1800;
+  petalStormAnnounced = false;
   document.getElementById("petal-ready").hidden = true;
   document.getElementById("petal-result").hidden = true;
   document.getElementById("open-letter").hidden = true;
@@ -251,9 +253,10 @@ function startPetalGame() {
 function schedulePetal() {
   if (!petalRunning) return;
   spawnPetalItem();
-  const elapsed = PETAL_DURATION - getPetalSecondsLeft();
+  const secondsLeft = getPetalSecondsLeft();
+  const elapsed = PETAL_DURATION - secondsLeft;
   const progress = Math.min(1, elapsed / PETAL_DURATION);
-  const delay = 800 - progress * 340;
+  const delay = secondsLeft <= 10 ? 290 : 680 - progress * 300;
   petalSpawnTimer = setTimeout(schedulePetal, delay);
 }
 
@@ -261,9 +264,12 @@ function spawnPetalItem() {
   const area = document.getElementById("petal-game-area");
   const itemData = choosePetalItem();
   const item = document.createElement("button");
-  const elapsed = PETAL_DURATION - getPetalSecondsLeft();
+  const secondsLeft = getPetalSecondsLeft();
+  const elapsed = PETAL_DURATION - secondsLeft;
   const progress = Math.min(1, elapsed / PETAL_DURATION);
-  const fallBase = 6.2 - progress * 2.6;
+  const fallBase = secondsLeft <= 10
+    ? 2.45
+    : 5.3 - progress * 2.35;
 
   item.className = `falling-item ${itemData.good ? "good" : "trick"}`;
   item.type = "button";
@@ -285,11 +291,20 @@ function spawnPetalItem() {
 }
 
 function choosePetalItem() {
-  const totalWeight = petalItems.reduce((total, item) => total + item.weight, 0);
+  const elapsed = PETAL_DURATION - getPetalSecondsLeft();
+  const progress = Math.min(1, elapsed / PETAL_DURATION);
+  const dangerTypes = new Set(["bird", "rain", "leaf", "fake"]);
+  const weightedItems = petalItems.map((item) => ({
+    item,
+    weight: dangerTypes.has(item.type)
+      ? item.weight * (1 + progress * .9)
+      : item.weight
+  }));
+  const totalWeight = weightedItems.reduce((total, entry) => total + entry.weight, 0);
   let random = Math.random() * totalWeight;
-  for (const item of petalItems) {
-    random -= item.weight;
-    if (random <= 0) return item;
+  for (const entry of weightedItems) {
+    random -= entry.weight;
+    if (random <= 0) return entry.item;
   }
   return petalItems[0];
 }
@@ -316,15 +331,16 @@ function catchPetalItem(element, itemData) {
     document.getElementById("petal-message").textContent = "¡Tiempo extra! Ganaste cinco segundos.";
     flashPetalArea("bonus");
   } else if (itemData.type === "bird") {
-    petalScore = Math.max(0, petalScore - 3);
+    petalScore = Math.max(0, petalScore - 1);
     breakPetalStreak();
     document.getElementById("petal-message").textContent =
-      "El pajarito cobró tres puntos como impuesto. Qué conveniente.";
+      "El pajarito robó un punto. Qué conveniente.";
     flashPetalArea("hit");
   } else if (itemData.type === "leaf") {
+    petalScore = Math.max(0, petalScore - 1);
     breakPetalStreak();
     document.getElementById("petal-message").textContent =
-      "Era una hoja. Tu multiplicador se fue volando.";
+      "Era una hoja seca. Perdiste un punto.";
     flashPetalArea("hit");
   } else if (itemData.type === "rain") {
     losePetalLife("¡Gota de lluvia! Perdiste una vida.");
@@ -364,8 +380,15 @@ function getPetalSecondsLeft() {
 
 function updatePetalClock() {
   if (!petalRunning) return;
+  const secondsLeft = getPetalSecondsLeft();
+  if (secondsLeft <= 10 && secondsLeft > 0 && !petalStormAnnounced) {
+    petalStormAnnounced = true;
+    document.getElementById("petal-game-area").classList.add("storm");
+    document.getElementById("petal-message").textContent =
+      "⚡ ¡Tormenta final! Todo caerá mucho más rápido durante 10 segundos.";
+  }
   updatePetalHud();
-  if (getPetalSecondsLeft() <= 0) endPetalGame("time");
+  if (secondsLeft <= 0) endPetalGame("time");
 }
 
 function updatePetalHud() {
@@ -382,6 +405,7 @@ function winPetalGame() {
   petalRunning = false;
   clearPetalTimers();
   document.querySelectorAll(".falling-item").forEach((item) => item.remove());
+  document.getElementById("petal-game-area").classList.remove("storm");
   savePetalBestScore(petalScore);
   document.getElementById("petal-message").textContent =
     "¡Ramo reconstruido! Dificultad superada y pajaritos oficialmente derrotados.";
@@ -393,6 +417,7 @@ function endPetalGame(reason) {
   petalRunning = false;
   clearPetalTimers();
   document.querySelectorAll(".falling-item").forEach((item) => item.remove());
+  document.getElementById("petal-game-area").classList.remove("storm");
   const best = savePetalBestScore(petalScore);
   document.getElementById("result-icon").textContent = reason === "time" ? "⏰" : "🐤";
   document.getElementById("result-title").textContent = "Game Over";
@@ -440,6 +465,7 @@ function resetPetalGame() {
   petalBestStreak = 0;
   petalDeadline = Date.now() + PETAL_DURATION * 1000;
   document.querySelectorAll(".falling-item").forEach((item) => item.remove());
+  document.getElementById("petal-game-area").classList.remove("storm");
   document.getElementById("petal-ready").hidden = false;
   document.getElementById("petal-result").hidden = true;
   document.getElementById("open-letter").hidden = true;
