@@ -68,27 +68,31 @@
       </div>
     </section>
 
-    <section class="scene mini-game" id="mini-game" aria-labelledby="game-title" hidden>
-      <div class="game-card glass">
-        <p class="eyebrow">Desafío para mi princesita</p>
-        <h2 id="game-title">Atrapa 10 flores amarillas</h2>
-        <p class="game-intro">Tienes 20 segundos. Cada flor que atrapes acercará un poquito más la carta.</p>
+    <section class="scene bird-game" id="bird-game" aria-labelledby="bird-game-title" hidden>
+      <div class="bird-game-card glass">
+        <p class="eyebrow">Alerta: robo emplumado</p>
+        <h2 id="bird-game-title">¡Los pajaritos se robaron mi carta!</h2>
+        <p class="bird-game-intro">Atrápalos cinco veces para recuperar todos los pedacitos. Cuidado: son rápidos, mañosos y exigen semillas como rescate.</p>
 
-        <div class="game-stats" aria-live="polite">
-          <span>Flores: <strong id="game-score">0</strong>/10</span>
-          <span>Tiempo: <strong id="game-time">20</strong>s</span>
+        <div class="bird-game-stats" aria-live="polite">
+          <span>Fragmentos: <strong id="bird-score">0</strong>/5</span>
+          <span>Intentos: <strong id="bird-attempts">0</strong></span>
         </div>
 
-        <div class="game-area" id="game-area" aria-label="Zona del juego">
-          <div class="game-ready" id="game-ready">
-            <span aria-hidden="true">🌻</span>
-            <p>¿Preparada, mañosita?</p>
-            <button class="primary-button" id="start-game">Comenzar juego</button>
+        <div class="bird-game-area" id="bird-game-area" aria-label="Zona de juego de los pajaritos">
+          <div class="bird-ready" id="bird-ready">
+            <span class="bird-duo" aria-hidden="true">🐤 🐤</span>
+            <p>“La carta es nuestra. Pío, pío.”</p>
+            <button class="primary-button" id="start-bird-game">¡Atraparlos!</button>
           </div>
+          <button class="naughty-bird" id="naughty-bird" aria-label="Atrapar al pajarito amarillo" hidden>🐤<span class="bird-paper">💌</span></button>
         </div>
 
-        <p class="game-message" id="game-message" aria-live="polite">Toca las flores antes de que desaparezcan.</p>
-        <button class="primary-button" id="open-letter" hidden>Abrir mi carta <span aria-hidden="true">💌</span></button>
+        <p class="bird-message" id="bird-message" aria-live="polite">Los sospechosos están fingiendo inocencia.</p>
+        <div class="letter-pieces" id="letter-pieces" aria-label="Fragmentos recuperados">
+          <span>□</span><span>□</span><span>□</span><span>□</span><span>□</span>
+        </div>
+        <button class="primary-button" id="open-letter" hidden>Recuperé la carta <span aria-hidden="true">💌</span></button>
       </div>
     </section>
 
