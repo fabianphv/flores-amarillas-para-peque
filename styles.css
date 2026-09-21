@@ -228,13 +228,15 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 .petal-game-card h2 { color: var(--gold-light); }
 .petal-intro { max-width: 650px; margin: 16px auto 18px; color: var(--muted); line-height: 1.55; }
 .petal-stats {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
   justify-content: center;
-  gap: 38px;
+  gap: 10px 24px;
   margin-bottom: 14px;
   color: var(--gold-light);
 }
-.petal-stats strong { color: white; font-size: 1.22rem; }
+.petal-stats span { white-space: nowrap; }
+.petal-stats strong { color: white; font-size: 1.15rem; }
 .petal-game-area {
   position: relative;
   height: min(52vh, 440px);
@@ -259,6 +261,26 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 }
 .petal-ready > span { font-size: clamp(3.2rem, 12vw, 6rem); animation: bird-bob 1.2s ease-in-out infinite alternate; }
 .petal-ready p { margin: 0; color: var(--gold-light); font-family: "Playfair Display", serif; font-size: 1.25rem; }
+.petal-result {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 26px;
+  background: rgba(4,14,31,.9);
+  backdrop-filter: blur(8px);
+}
+.petal-result[hidden] { display: none; }
+.petal-result > span { font-size: 4.5rem; }
+.petal-result h3 { margin: 0; color: var(--gold-light); font-family: "Playfair Display", serif; font-size: 2.25rem; }
+.petal-result > p { max-width: 480px; margin: 0; color: var(--muted); line-height: 1.5; }
+.result-stats { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 5px 0; color: var(--gold-light); }
+.result-stats strong { color: white; }
+.petal-game-area.hit { animation: area-hit .32s ease; }
+.petal-game-area.bonus { animation: area-bonus .35s ease; }
 .falling-item {
   position: absolute;
   z-index: 2;
@@ -303,6 +325,8 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 @keyframes item-caught {
   to { opacity: 0; transform: scale(1.7) rotate(25deg); }
 }
+@keyframes area-hit { 50% { box-shadow: inset 0 0 80px rgba(220,54,54,.72); } }
+@keyframes area-bonus { 50% { box-shadow: inset 0 0 80px rgba(249,199,79,.72); } }
 
 .letter-scene { padding-block: 60px; }
 .letter-wrap { width: min(820px, 100%); }
@@ -349,6 +373,7 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
   .suspect-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; text-align: left; }
   .suspect-card h3 { margin: 0; }
   .suspect-bird { font-size: 3.3rem; }
+  .petal-stats { grid-template-columns: repeat(2, auto); }
   .petal-game-area { min-height: 410px; }
   .falling-item { width: 68px; height: 68px; font-size: 2.5rem; }
   .letter-actions { display: grid; }
