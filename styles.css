@@ -138,107 +138,85 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
 .choice-button.correct { background: rgba(249,199,79,.16); border-color: rgba(249,199,79,.55); }
 .choice-hint { min-height: 24px; color: var(--gold-light); margin: 18px 0 0; }
 
-.bird-game { padding-block: 26px; }
-.bird-game-card {
-  width: min(820px, 100%);
+.bird-trial { padding-block: 28px; }
+.trial-card {
+  width: min(900px, 100%);
   padding: clamp(24px, 5vw, 48px);
   border-radius: 30px;
   text-align: center;
 }
-.bird-game-card h2 { color: var(--gold-light); }
-.bird-game-intro { max-width: 650px; margin: 16px auto 20px; color: var(--muted); line-height: 1.55; }
-.bird-game-stats {
+.trial-card h2 { color: var(--gold-light); }
+.trial-intro { max-width: 670px; margin: 16px auto 18px; color: var(--muted); line-height: 1.55; }
+.trial-status {
   display: flex;
   justify-content: center;
-  gap: 34px;
-  margin-bottom: 14px;
+  gap: 36px;
+  margin-bottom: 18px;
   color: var(--gold-light);
 }
-.bird-game-stats strong { color: white; font-size: 1.2rem; }
-.bird-game-area {
-  position: relative;
-  height: min(50vh, 410px);
-  min-height: 340px;
-  overflow: hidden;
+.trial-status strong { color: white; font-size: 1.2rem; }
+.suspects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.suspect-card {
+  padding: 18px 12px;
   border: 1px solid var(--border);
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(4,18,38,.55), rgba(249,199,79,.13));
-  box-shadow: inset 0 0 60px rgba(0,0,0,.25);
-  touch-action: manipulation;
+  border-radius: 20px;
+  background: rgba(255,255,255,.055);
+  transition: transform .2s ease, background .2s ease;
 }
-.bird-ready {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 14px;
-  padding: 24px;
-}
-.bird-duo { font-size: clamp(3.5rem, 12vw, 6.5rem); animation: bird-bob 1.1s ease-in-out infinite alternate; }
-.bird-ready p { margin: 0; color: var(--gold-light); font-family: "Playfair Display", serif; font-size: 1.3rem; }
-.bird-stage { position: absolute; inset: 0; }
-.memory-bird {
-  position: absolute;
-  top: 48%;
-  width: 92px;
-  height: 92px;
-  padding: 0;
-  border: 1px solid rgba(255,231,146,.45);
-  border-radius: 50%;
-  cursor: pointer;
-  background: rgba(255,240,170,.13);
-  box-shadow: 0 0 30px rgba(249,199,79,.58);
-  font-size: 3.5rem;
-  transform: translate(-50%, -50%);
-  transition: left var(--shuffle-speed, .82s) cubic-bezier(.45,0,.25,1), top .32s ease, transform .18s ease, box-shadow .2s ease;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.memory-bird:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.1) rotate(-5deg); }
-.memory-bird:disabled { cursor: default; }
-.memory-bird.revealing {
-  transform: translate(-50%, -62%) scale(1.14);
-  box-shadow: 0 0 0 8px rgba(249,199,79,.13), 0 0 48px rgba(255,224,120,.95);
-}
-.memory-bird.wrong { animation: bird-shake .36s ease; }
-.memory-bird.correct { animation: bird-celebrate .5s ease; }
-.bird-slot-0 { left: 18%; }
-.bird-slot-1 { left: 50%; }
-.bird-slot-2 { left: 82%; }
-.bird-mark {
+.suspect-card.questioned { background: rgba(249,199,79,.11); }
+.suspect-card.culprit { box-shadow: 0 0 0 3px var(--gold), 0 0 36px rgba(249,199,79,.5); }
+.suspect-bird { position: relative; display: inline-block; font-size: clamp(3.3rem, 8vw, 5rem); }
+.suspect-bird span {
   position: absolute;
   left: -7px;
-  top: -8px;
+  top: 1px;
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 29px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: rgba(7,22,45,.92);
-  border: 1px solid rgba(255,231,146,.55);
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
-  font-size: .95rem;
+  border: 1px solid var(--border);
+  font-size: .9rem;
 }
-.hidden-letter {
-  position: absolute;
-  right: -8px;
-  bottom: -3px;
-  font-size: 1.65rem;
-  opacity: 0;
-  transform: scale(.3) rotate(15deg);
-  transition: opacity .25s ease, transform .25s ease;
+.suspect-card h3 { margin: 6px 0 12px; color: var(--gold-light); }
+.interrogate { min-height: 44px; padding: 10px 17px; }
+.testimony-box {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 74px;
+  margin: 18px 0;
+  padding: 15px 18px;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: rgba(4,16,34,.52);
+  text-align: left;
 }
-.memory-bird.revealing .hidden-letter,
-.memory-bird.show-answer .hidden-letter { opacity: 1; transform: scale(1) rotate(15deg); }
-.bird-message { min-height: 26px; margin: 15px 0 8px; color: var(--gold-light); font-weight: 600; }
-.letter-pieces { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; color: var(--gold); font-size: 1.5rem; }
-.letter-pieces .recovered { animation: piece-pop .35s ease; }
-#open-letter { margin-inline: auto; }
-@keyframes bird-bob { to { transform: translateY(-9px) rotate(3deg); } }
-@keyframes bird-shake { 25% { margin-left: -12px; } 50% { margin-left: 12px; } 75% { margin-left: -7px; } }
-@keyframes bird-celebrate { 50% { transform: translate(-50%, -68%) scale(1.25) rotate(10deg); } }
-@keyframes piece-pop { 50% { transform: scale(1.45) rotate(8deg); } }
+.testimony-icon { flex: 0 0 auto; font-size: 1.6rem; }
+.testimony-box p { margin: 0; line-height: 1.5; }
+.evidence-area { margin-top: 10px; }
+.evidence-title { margin: 0 0 10px; color: var(--gold-light); font-weight: 700; }
+.evidence-buttons, .accusation-buttons { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.evidence-button {
+  min-height: 44px;
+  padding: 10px 16px;
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  cursor: pointer;
+}
+.evidence-button:hover { background: rgba(255,255,255,.13); }
+.evidence-button.checked { color: #2e2204; background: var(--gold); }
+.accusation-area { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.accusation-area > p { margin: 0 0 12px; color: var(--muted); }
+.accuse { min-height: 46px; padding: 11px 18px; }
+.accuse:disabled { opacity: .38; cursor: not-allowed; }
+.accuse:not(:disabled) { border-color: rgba(249,199,79,.55); }
+#next-case, #open-letter { margin: 20px auto 0; }
+@keyframes culprit-pop { 50% { transform: translateY(-7px) rotate(3deg); } }
+.suspect-card.culprit .suspect-bird { animation: culprit-pop .5s ease; }
 
 .letter-scene { padding-block: 60px; }
 .letter-wrap { width: min(820px, 100%); }
@@ -281,8 +259,10 @@ h2 { font-size: clamp(2.15rem, 5vw, 4rem); }
   .flower-5 { right: 34%; bottom: 2%; }
   .choice-grid { grid-template-columns: 1fr; }
   .choice-button span { display: inline; margin: 0 8px 0 0; }
-  .bird-game-area { min-height: 400px; }
-  .memory-bird { width: 76px; height: 76px; font-size: 2.9rem; }
+  .suspects { grid-template-columns: 1fr; }
+  .suspect-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; text-align: left; }
+  .suspect-card h3 { margin: 0; }
+  .suspect-bird { font-size: 3.3rem; }
   .letter-actions { display: grid; }
 }
 
