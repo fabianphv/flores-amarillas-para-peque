@@ -252,7 +252,8 @@ function schedulePetal() {
   if (!petalRunning) return;
   spawnPetalItem();
   const elapsed = PETAL_DURATION - getPetalSecondsLeft();
-  const delay = elapsed < 15 ? 760 : elapsed < 30 ? 610 : 480;
+  const progress = Math.min(1, elapsed / PETAL_DURATION);
+  const delay = 800 - progress * 340;
   petalSpawnTimer = setTimeout(schedulePetal, delay);
 }
 
@@ -261,7 +262,8 @@ function spawnPetalItem() {
   const itemData = choosePetalItem();
   const item = document.createElement("button");
   const elapsed = PETAL_DURATION - getPetalSecondsLeft();
-  const fallBase = elapsed < 15 ? 5.8 : elapsed < 30 ? 4.8 : 4.05;
+  const progress = Math.min(1, elapsed / PETAL_DURATION);
+  const fallBase = 6.2 - progress * 2.6;
 
   item.className = `falling-item ${itemData.good ? "good" : "trick"}`;
   item.type = "button";
@@ -300,11 +302,10 @@ function catchPetalItem(element, itemData) {
   if (itemData.type === "petal") {
     petalStreak += 1;
     petalBestStreak = Math.max(petalBestStreak, petalStreak);
-    const multiplier = getPetalMultiplier();
-    petalScore += itemData.points * multiplier;
+    petalScore += 1;
     flashPetalArea("bonus");
     document.getElementById("petal-message").textContent =
-      `¡Pétalo atrapado! Combo x${multiplier}.`;
+      `¡Pétalo atrapado! +1 punto. Racha: ${petalStreak}.`;
   } else if (itemData.type === "heart") {
     petalLives = Math.min(3, petalLives + 1);
     document.getElementById("petal-message").textContent =
@@ -357,13 +358,6 @@ function breakPetalStreak() {
   petalStreak = 0;
 }
 
-function getPetalMultiplier() {
-  if (petalStreak >= 10) return 4;
-  if (petalStreak >= 6) return 3;
-  if (petalStreak >= 3) return 2;
-  return 1;
-}
-
 function getPetalSecondsLeft() {
   return Math.max(0, Math.ceil((petalDeadline - Date.now()) / 1000));
 }
@@ -379,7 +373,7 @@ function updatePetalHud() {
   document.getElementById("petal-time").textContent = String(getPetalSecondsLeft());
   document.getElementById("petal-lives").textContent =
     "💛".repeat(Math.max(0, petalLives)) + "🖤".repeat(Math.max(0, 3 - petalLives));
-  document.getElementById("petal-multiplier").textContent = `x${getPetalMultiplier()}`;
+  document.getElementById("petal-streak").textContent = String(petalStreak);
   document.getElementById("bouquet-fill").style.width =
     `${Math.min(100, (petalScore / PETAL_TARGET) * 100)}%`;
 }
