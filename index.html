@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07162d" />
+  <meta name="description" content="Una sorpresa de flores amarillas creada con amor para Peque." />
+  <title>Flores amarillas para mi princesita</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='11' fill='%23724a12'/%3E%3Cg fill='%23f9c74f'%3E%3Cellipse cx='32' cy='13' rx='9' ry='14'/%3E%3Cellipse cx='32' cy='51' rx='9' ry='14'/%3E%3Cellipse cx='13' cy='32' rx='14' ry='9'/%3E%3Cellipse cx='51' cy='32' rx='14' ry='9'/%3E%3Cellipse cx='18.5' cy='18.5' rx='9' ry='13' transform='rotate(-45 18.5 18.5)'/%3E%3Cellipse cx='45.5' cy='45.5' rx='9' ry='13' transform='rotate(-45 45.5 45.5)'/%3E%3Cellipse cx='45.5' cy='18.5' rx='13' ry='9' transform='rotate(-45 45.5 18.5)'/%3E%3Cellipse cx='18.5' cy='45.5' rx='13' ry='9' transform='rotate(-45 18.5 45.5)'/%3E%3C/g%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <main>
+    <section class="scene intro active" id="intro" aria-labelledby="intro-title">
+      <div class="intro-card glass">
+        <p class="eyebrow">21 de septiembre · para alguien muy especial</p>
+        <h1 id="intro-title">Peque, hay un jardín esperando por ti</h1>
+        <p>No es solo una página. Es un caminito de pequeñas cosas que quiero decirte.</p>
+        <button class="primary-button" id="enter-button">Entrar al jardín <span aria-hidden="true">→</span></button>
+        <span class="tiny-note">Hecho especialmente para mi princesita</span>
+      </div>
+    </section>
+
+    <section class="scene garden" id="garden" aria-labelledby="garden-title" hidden>
+      <header class="garden-header glass">
+        <div>
+          <p class="eyebrow">Primera sorpresa</p>
+          <h2 id="garden-title">Encuentra las cinco flores luminosas</h2>
+          <p>Cada una guarda algo que adoro de ti.</p>
+        </div>
+        <div class="progress-wrap" aria-live="polite">
+          <span id="progress-text">0 de 5</span>
+          <div class="progress"><span id="progress-bar"></span></div>
+        </div>
+      </header>
+
+      <div class="flower-field" id="flower-field">
+        <button class="flower flower-1" data-message="Tu forma de alegrar incluso mis días más simples." aria-label="Descubrir la primera flor">🌻</button>
+        <button class="flower flower-2" data-message="La ternura con la que conviertes cualquier momento en un recuerdo." aria-label="Descubrir la segunda flor">🌼</button>
+        <button class="flower flower-3" data-message="Tu sonrisa, porque siempre encuentra la manera de llegar hasta mí." aria-label="Descubrir la tercera flor">🌻</button>
+        <button class="flower flower-4" data-message="La paz que siento cuando sé que estás conmigo." aria-label="Descubrir la cuarta flor">🌼</button>
+        <button class="flower flower-5" data-message="Que siendo tú, sin intentarlo, haces mi mundo mucho más bonito." aria-label="Descubrir la quinta flor">🌻</button>
+      </div>
+
+      <div class="message-toast glass" id="message-toast" role="status" aria-live="polite">
+        <span aria-hidden="true">✦</span><p>Toca una flor que esté brillando…</p>
+      </div>
+
+      <button class="primary-button continue-button" id="continue-button" hidden>Recoger el ramo <span aria-hidden="true">→</span></button>
+    </section>
+
+    <section class="scene choice" id="choice" aria-labelledby="choice-title" hidden>
+      <div class="choice-card glass">
+        <p class="eyebrow">El ramo ya es tuyo</p>
+        <div class="bouquet" aria-hidden="true">💐</div>
+        <h2 id="choice-title">Pero todavía falta lo más importante…</h2>
+        <p>¿Dónde crees que escondí lo que realmente quería regalarte?</p>
+        <div class="choice-grid">
+          <button class="choice-button decoy" data-decoy="Casi… aquí solo dejé un beso para ti 😘"><span>🌙</span> En la luna</button>
+          <button class="choice-button decoy" data-decoy="Muy cerca… pero esta estrella solo dice que te ves preciosa ✨"><span>⭐</span> En una estrella</button>
+          <button class="choice-button correct"><span>💛</span> En mi corazón</button>
+        </div>
+        <p class="choice-hint" id="choice-hint" aria-live="polite">Puedes probar todas las opciones.</p>
+      </div>
+    </section>
+
+    <section class="scene letter-scene" id="letter-scene" aria-labelledby="letter-title" hidden>
+      <div class="letter-wrap">
+        <div class="letter glass">
+          <p class="eyebrow">Para mi princesita</p>
+          <h2 id="letter-title">Peque:</h2>
+          <div class="letter-copy">
+            <p>Hoy quise regalarte flores amarillas de una forma diferente. Unas que no se marchiten y que puedas volver a encontrar siempre que quieras recordar cuánto significas para mí.</p>
+            <p>Desde que estás en mi vida, hay momentos sencillos que se sienten especiales solo porque puedo compartirlos contigo. Me encanta tu ternura, tu sonrisa y esa manera tan tuya de hacer que todo se sienta más bonito.</p>
+            <p>Estas flores representan la alegría que traes a mis días, pero también una promesa: seguir cuidando lo nuestro, elegirte en los días fáciles y también en los complicados, y nunca dejar que olvides lo maravillosa que eres.</p>
+            <p>No necesito una fecha para amarte, pero sí quiero aprovechar cada fecha para recordártelo. Gracias por existir, por ser tú y por permitir que mi corazón tenga un lugar junto al tuyo.</p>
+            <p class="letter-ending">Te quiero muchísimo, mi princesita.<br><span>Con todo mi amor, tu niño 💛</span></p>
+          </div>
+          <div class="letter-actions">
+            <a class="primary-button song-button" href="https://www.youtube.com/watch?v=2Vv-BfVoq4g" target="_blank" rel="noopener noreferrer">Escuchar nuestra canción <span aria-hidden="true">♫</span></a>
+            <button class="secondary-button" id="final-surprise">Una última sorpresa</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="finale" id="finale" hidden role="dialog" aria-modal="true" aria-labelledby="finale-title">
+    <div class="finale-content glass">
+      <p class="eyebrow">Y si tuviera que resumirlo todo…</p>
+      <h2 id="finale-title">Te volvería a elegir a ti. Siempre.</h2>
+      <p>Feliz día de las flores amarillas, mi princesita.</p>
+      <div class="finale-icons" aria-hidden="true">🌻 💛 🌻</div>
+      <button class="primary-button" id="replay-button">Volver a recorrer nuestro jardín</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
