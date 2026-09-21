@@ -1,8 +1,11 @@
 const scenes = ["intro", "garden", "choice", "bird-game", "letter-scene"];
 const foundFlowers = new Set();
+let birdRound = 1;
 let birdScore = 0;
-let birdAttempts = 0;
-let birdActive = false;
+let carrierBird = 0;
+let birdPositions = [18, 50, 82];
+let waitingForBirdChoice = false;
+let gameToken = 0;
 
 function showScene(id) {
   scenes.forEach((sceneId) => {
@@ -45,80 +48,111 @@ document.querySelector(".choice-button.correct").addEventListener("click", () =>
   setTimeout(() => showScene("bird-game"), 700);
 });
 
-const bird = document.getElementById("naughty-bird");
-const birdArea = document.getElementById("bird-game-area");
-const funnyDodges = [
-  "¡Casi! El sindicato de pajaritos rechazó tu solicitud.",
-  "Pío, pío… demasiado lenta, humana.",
-  "Ese intento cuesta tres semillas. No aceptamos devoluciones.",
-  "Yo no fui. Fue el otro pajarito amarillo.",
-  "La carta ahora está bajo protección emplumada."
+const memoryBirds = [...document.querySelectorAll(".memory-bird")];
+const birdStage = document.getElementById("bird-stage");
+const birdMessagesWrong = [
+  "¡Te engañaron! El culpable dice: “casi, humana… pío, pío”.",
+  "Pajarito equivocado. El verdadero ladrón exige semillas ilimitadas.",
+  "¡Era el otro! Estos sospechosos claramente trabajan en equipo.",
+  "Fallaste, pero el sindicato de pajaritos autorizó otro intento."
 ];
-const caughtMessages = [
-  "¡Uno atrapado! Devolvió un pedacito a cambio de semillas.",
-  "¡Bien! Confesó que la carta era demasiado romántica.",
-  "Otro fragmento recuperado. El sospechoso exige un abogado.",
-  "¡Ya casi! Intentó distraerte haciéndose el tierno.",
-  "¡Carta recuperada! Los culpables dicen estar profundamente arrepentidos… más o menos."
+const birdMessagesRight = [
+  "¡Correcto! Recuperaste el primer pedacito.",
+  "¡Muy bien! Ese pajarito confesó inmediatamente.",
+  "¡Tres aciertos! Los sospechosos empiezan a ponerse nerviosos.",
+  "¡Solo falta uno! El cabecilla está intentando parecer adorable.",
+  "¡Los atrapaste! Prometieron no volver a robar cartas… hoy."
 ];
 
 document.getElementById("start-bird-game").addEventListener("click", () => {
-  birdScore = 0;
-  birdAttempts = 0;
-  birdActive = true;
-  document.getElementById("bird-score").textContent = "0";
-  document.getElementById("bird-attempts").textContent = "0";
+  resetBirdGame();
   document.getElementById("bird-ready").hidden = true;
-  document.getElementById("open-letter").hidden = true;
-  document.getElementById("bird-message").textContent = "¡Rápido! El ladrón todavía tiene la carta.";
-  updateLetterPieces();
-  moveBird();
-  bird.hidden = false;
+  birdStage.hidden = false;
+  startBirdRound();
 });
 
-bird.addEventListener("click", () => {
-  if (!birdActive) return;
-  birdAttempts += 1;
-  document.getElementById("bird-attempts").textContent = String(birdAttempts);
+async function startBirdRound() {
+  const token = ++gameToken;
+  waitingForBirdChoice = false;
+  carrierBird = Math.floor(Math.random() * memoryBirds.length);
+  birdPositions = [18, 50, 82];
+  document.getElementById("bird-round").textContent = String(birdRound);
+  document.getElementById("bird-message").textContent = "Memoriza bien quién lleva el sobre…";
+  memoryBirds.forEach((bird, index) => {
+    bird.disabled = true;
+    bird.className = `memory-bird bird-slot-${index}`;
+    bird.style.left = `${birdPositions[index]}%`;
+    bird.style.setProperty("--shuffle-speed", `${Math.max(.28, .62 - birdRound * .06)}s`);
+  });
 
-  const mustDodge = birdAttempts % 3 === 0 && birdScore < 4;
-  if (mustDodge) {
-    document.getElementById("bird-message").textContent = funnyDodges[(birdAttempts / 3 - 1) % funnyDodges.length];
-    bird.classList.add("dodging");
-    moveBird();
-    setTimeout(() => bird.classList.remove("dodging"), 260);
-    return;
+  memoryBirds[carrierBird].classList.add("revealing");
+  await pause(Math.max(850, 1450 - birdRound * 90));
+  if (token !== gameToken) return;
+  memoryBirds[carrierBird].classList.remove("revealing");
+  document.getElementById("bird-message").textContent = "¡No le quites los ojos de encima!";
+
+  const swaps = 3 + birdRound * 2;
+  for (let i = 0; i < swaps; i += 1) {
+    let first = Math.floor(Math.random() * 3);
+    let second = Math.floor(Math.random() * 3);
+    while (second === first) second = Math.floor(Math.random() * 3);
+    [birdPositions[first], birdPositions[second]] = [birdPositions[second], birdPositions[first]];
+    memoryBirds.forEach((bird, index) => {
+      bird.style.left = `${birdPositions[index]}%`;
+    });
+    await pause(Math.max(310, 720 - birdRound * 70));
+    if (token !== gameToken) return;
   }
 
-  birdScore += 1;
-  document.getElementById("bird-score").textContent = String(birdScore);
-  document.getElementById("bird-message").textContent = caughtMessages[birdScore - 1];
-  updateLetterPieces();
-  bird.classList.add("caught");
+  waitingForBirdChoice = true;
+  memoryBirds.forEach((bird) => {
+    bird.disabled = false;
+  });
+  document.getElementById("bird-message").textContent = "¿Cuál pajarito tiene el fragmento? Toca al culpable.";
+}
 
-  if (birdScore === 5) {
-    birdActive = false;
-    launchPetals(28);
-    setTimeout(() => {
-      bird.hidden = true;
-      bird.classList.remove("caught");
+memoryBirds.forEach((bird) => {
+  bird.addEventListener("click", () => chooseBird(Number(bird.dataset.bird)));
+});
+
+async function chooseBird(selectedBird) {
+  if (!waitingForBirdChoice) return;
+  waitingForBirdChoice = false;
+  memoryBirds.forEach((bird) => {
+    bird.disabled = true;
+  });
+
+  const selected = memoryBirds[selectedBird];
+  const carrier = memoryBirds[carrierBird];
+  carrier.classList.add("show-answer");
+
+  if (selectedBird === carrierBird) {
+    birdScore += 1;
+    selected.classList.add("correct");
+    document.getElementById("bird-score").textContent = String(birdScore);
+    document.getElementById("bird-message").textContent = birdMessagesRight[birdScore - 1];
+    updateLetterPieces();
+
+    if (birdScore === 5) {
+      launchPetals(30);
+      await pause(850);
+      birdStage.hidden = true;
       document.getElementById("open-letter").hidden = false;
-    }, 420);
-    return;
+      document.getElementById("bird-message").textContent = "Carta recuperada. Caso cerrado por exceso de ternura.";
+      return;
+    }
+
+    birdRound += 1;
+    await pause(1100);
+  } else {
+    selected.classList.add("wrong");
+    document.getElementById("bird-message").textContent = birdMessagesWrong[Math.floor(Math.random() * birdMessagesWrong.length)];
+    await pause(1350);
   }
 
-  setTimeout(() => {
-    bird.classList.remove("caught");
-    moveBird();
-  }, 420);
-});
-
-function moveBird() {
-  const padding = 12;
-  const maxX = Math.max(padding, birdArea.clientWidth - bird.offsetWidth - padding);
-  const maxY = Math.max(padding, birdArea.clientHeight - bird.offsetHeight - padding);
-  bird.style.left = `${padding + Math.random() * (maxX - padding)}px`;
-  bird.style.top = `${padding + Math.random() * (maxY - padding)}px`;
+  carrier.classList.remove("show-answer");
+  selected.classList.remove("correct", "wrong");
+  startBirdRound();
 }
 
 function updateLetterPieces() {
@@ -127,6 +161,22 @@ function updateLetterPieces() {
     piece.textContent = recovered ? "💛" : "□";
     piece.classList.toggle("recovered", recovered);
   });
+}
+
+function resetBirdGame() {
+  gameToken += 1;
+  birdRound = 1;
+  birdScore = 0;
+  waitingForBirdChoice = false;
+  document.getElementById("bird-round").textContent = "1";
+  document.getElementById("bird-score").textContent = "0";
+  document.getElementById("bird-message").textContent = "Los sospechosos están intentando parecer inocentes.";
+  document.getElementById("open-letter").hidden = true;
+  memoryBirds.forEach((bird, index) => {
+    bird.className = `memory-bird bird-slot-${index}`;
+    bird.style.left = `${[18, 50, 82][index]}%`;
+  });
+  updateLetterPieces();
 }
 
 document.getElementById("open-letter").addEventListener("click", () => showScene("letter-scene"));
@@ -152,15 +202,12 @@ function resetJourney() {
   document.getElementById("continue-button").hidden = true;
   document.getElementById("choice-hint").textContent = "Puedes probar todas las opciones.";
   document.getElementById("bird-ready").hidden = false;
-  document.getElementById("naughty-bird").hidden = true;
-  document.getElementById("open-letter").hidden = true;
-  document.getElementById("bird-message").textContent = "Los sospechosos están fingiendo inocencia.";
-  birdScore = 0;
-  birdAttempts = 0;
-  birdActive = false;
-  document.getElementById("bird-score").textContent = "0";
-  document.getElementById("bird-attempts").textContent = "0";
-  updateLetterPieces();
+  birdStage.hidden = true;
+  resetBirdGame();
+}
+
+function pause(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function launchPetals(amount) {
