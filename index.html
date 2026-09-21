@@ -70,25 +70,30 @@
 
     <section class="scene bird-game" id="bird-game" aria-labelledby="bird-game-title" hidden>
       <div class="bird-game-card glass">
-        <p class="eyebrow">Alerta: robo emplumado</p>
-        <h2 id="bird-game-title">¡Los pajaritos se robaron mi carta!</h2>
-        <p class="bird-game-intro">Atrápalos cinco veces para recuperar todos los pedacitos. Cuidado: son rápidos, mañosos y exigen semillas como rescate.</p>
+        <p class="eyebrow">Desafío de atención emplumado</p>
+        <h2 id="bird-game-title">¿Qué pajarito robó la carta?</h2>
+        <p class="bird-game-intro">Mira bien cuál lleva el sobre. Los tres se mezclarán y tendrás que encontrar al culpable. Cada ronda será más rápida.</p>
 
         <div class="bird-game-stats" aria-live="polite">
-          <span>Fragmentos: <strong id="bird-score">0</strong>/5</span>
-          <span>Intentos: <strong id="bird-attempts">0</strong></span>
+          <span>Ronda: <strong id="bird-round">1</strong>/5</span>
+          <span>Aciertos: <strong id="bird-score">0</strong></span>
         </div>
 
-        <div class="bird-game-area" id="bird-game-area" aria-label="Zona de juego de los pajaritos">
+        <div class="bird-game-area" id="bird-game-area" aria-label="Juego de concentración con tres pajaritos">
           <div class="bird-ready" id="bird-ready">
-            <span class="bird-duo" aria-hidden="true">🐤 🐤</span>
-            <p>“La carta es nuestra. Pío, pío.”</p>
-            <button class="primary-button" id="start-bird-game">¡Atraparlos!</button>
+            <span class="bird-duo" aria-hidden="true">🐤 🐤 🐤</span>
+            <p>“Jamás descubrirás quién tiene la carta.”</p>
+            <button class="primary-button" id="start-bird-game">Aceptar el desafío</button>
           </div>
-          <button class="naughty-bird" id="naughty-bird" aria-label="Atrapar al pajarito amarillo" hidden>🐤<span class="bird-paper">💌</span></button>
+
+          <div class="bird-stage" id="bird-stage" hidden>
+            <button class="memory-bird bird-slot-0" data-bird="0" aria-label="Elegir primer pajarito">🐤<span class="hidden-letter">💌</span></button>
+            <button class="memory-bird bird-slot-1" data-bird="1" aria-label="Elegir segundo pajarito">🐤<span class="hidden-letter">💌</span></button>
+            <button class="memory-bird bird-slot-2" data-bird="2" aria-label="Elegir tercer pajarito">🐤<span class="hidden-letter">💌</span></button>
+          </div>
         </div>
 
-        <p class="bird-message" id="bird-message" aria-live="polite">Los sospechosos están fingiendo inocencia.</p>
+        <p class="bird-message" id="bird-message" aria-live="polite">Los sospechosos están intentando parecer inocentes.</p>
         <div class="letter-pieces" id="letter-pieces" aria-label="Fragmentos recuperados">
           <span>□</span><span>□</span><span>□</span><span>□</span><span>□</span>
         </div>
