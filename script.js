@@ -210,7 +210,7 @@ let petalGraceUntil = 0;
 let petalStormAnnounced = false;
 
 const PETAL_TARGET = 35;
-const PETAL_DURATION = 40;
+const PETAL_DURATION = 35;
 const petalItems = [
   { symbol: "🌼", type: "petal", points: 1, weight: 55, good: true },
   { symbol: "💛", type: "heart", points: 0, weight: 5 },
